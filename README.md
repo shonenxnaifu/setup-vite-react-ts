@@ -132,3 +132,101 @@ Setup ESLint and Prettier
    +  'plugin:prettier/recommended',
    ]
    ```
+
+## 3. setup vitest
+- install `vitest` dependency
+   ```
+   npm i -D vitest
+   ```
+- add this config from this [URL](https://github.com/vitest-dev/vitest/blob/main/examples/react-testing-lib-msw/vite.config.ts)
+   ```diff
+   +   /* eslint-disable import/no-extraneous-dependencies */
+   +   /// <reference types="vitest" />
+   +   /// <reference types="vite/client" />
+
+      import { defineConfig } from 'vite';
+      import react from '@vitejs/plugin-react';
+
+      // https://vitejs.dev/config/
+      export default defineConfig({
+      plugins: [react()],
+   +   test: {
+   +      globals: true,
+   +      environment: 'jsdom',
+   +      setupFiles: ['./src/setupTests.ts'],
+   +   },
+      });
+
+   ```
+- changes the `inlcude` in `tsconfig.json` into this
+   ``` diff
+      "include": [
+   +     "vite.config.ts",
+         ".eslintrc.cjs",
+         "src"
+      ],
+   ```
+
+## 4. setup react testing library
+- install `testing-library` dependency
+   ```
+   npm i -D @testing-library/react 
+   ```
+
+## 5. setup jest-dom testing library
+- install `jest-dom` dependency
+   ```
+   npm i -D @testing-library/jest-dom@5.16.5 
+   ```
+- add this code into `setupTests.ts`
+   ```javascript
+   /* eslint-disable import/no-extraneous-dependencies */
+   import matchers from '@testing-library/jest-dom/matchers';
+   import { expect } from 'vitest';
+
+   expect.extend(matchers);
+   ```
+
+## 6. create test file
+- create `App.test.tsx` and add this code
+   ```javascript
+   /* eslint-disable import/no-extraneous-dependencies */
+   import { describe, expect, it } from 'vitest';
+   import { render, screen } from '@testing-library/react';
+
+   import App from './App';
+
+   describe('App', () => {
+      it('Renders hello world', () => {
+         // ARRANGE
+         render(<App />);
+         // ACT
+         // EXPECT
+         expect(
+            screen.getByRole('heading', {
+            level: 1,
+            })
+         ).toHaveTextContent('Hello World');
+      });
+   });
+   ```
+
+## 7. setup react-router-dom v6
+- modify `App.tsx` into this
+   ```javascript
+   import { HashRouter } from 'react-router-dom';
+
+   function App() {
+      return <h1>Hello World</h1>;
+   }
+
+   function WrappedApp() {
+      return (
+         <HashRouter>
+            <App />
+         </HashRouter>
+      );
+   }
+
+   export default WrappedApp;
+   ```
